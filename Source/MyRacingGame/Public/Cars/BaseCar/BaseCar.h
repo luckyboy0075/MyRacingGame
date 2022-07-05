@@ -68,7 +68,7 @@ protected:
 	bool isInReverse { false };
 	
 	UPROPERTY(EditAnywhere, BlueprintReadOnly, Category = "Game")
-	bool isInCarCamera { false };
+	bool isInCarCamera { true };
 
 	UPROPERTY(VisibleAnywhere, BlueprintReadOnly)
 	int32 CurrentGear{};

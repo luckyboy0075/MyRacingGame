@@ -51,19 +51,19 @@ void ABaseCar::SetupPlayerInputComponent(UInputComponent* playerInputComponent)
 {
 	Super::SetupPlayerInputComponent(playerInputComponent);
 
-	playerInputComponent->BindAction("ApplyHandbrake", IE_Pressed, this, &ABaseCar::ApplyHandbrakePressed);
-	playerInputComponent->BindAction("ApplyHandbrake", IE_Released, this, &ABaseCar::ApplyHandbrakeReleased);
-	playerInputComponent->BindAction("SwitchCamera", IE_Pressed, this, &ABaseCar::HandleSwitchCamera);
-	playerInputComponent->BindAction("ShiftUp", IE_Pressed, this, &ABaseCar::ShiftGearUp);
-	playerInputComponent->BindAction("ShiftDown", IE_Pressed, this, &ABaseCar::ShiftGearDown);
+	InputComponent->BindAction("ApplyHandbrake", IE_Pressed, this, &ABaseCar::ApplyHandbrakePressed);
+	InputComponent->BindAction("ApplyHandbrake", IE_Released, this, &ABaseCar::ApplyHandbrakeReleased);
+	InputComponent->BindAction("SwitchCamera", IE_Pressed, this, &ABaseCar::HandleSwitchCamera);
+	InputComponent->BindAction("ShiftUp", IE_Pressed, this, &ABaseCar::ShiftGearUp);
+	InputComponent->BindAction("ShiftDown", IE_Pressed, this, &ABaseCar::ShiftGearDown);
 	
-	playerInputComponent->BindAxis("MoveForward", this, &ABaseCar::MoveAxisForward);
-	playerInputComponent->BindAxis("TurnRigth", this, &ABaseCar::MoveAxisRight);
+	InputComponent->BindAxis("MoveForward", this, &ABaseCar::MoveAxisForward);
+	InputComponent->BindAxis("TurnRigth", this, &ABaseCar::MoveAxisRight);
 }
 
 void ABaseCar::MoveAxisForward(float delta)
 {
-	if (delta > 0)
+	if (!FMath::IsNearlyZero(delta))
 	{
 		UE_LOG(LogClass, Error, TEXT("MovingForward"));
 		GEngine->AddOnScreenDebugMessage(-1, 5.f, FColor::Green, TEXT("MovingForward"));
@@ -73,8 +73,8 @@ void ABaseCar::MoveAxisForward(float delta)
 	}
 	else
 	{
-		UE_LOG(LogClass, Error, TEXT("MovingBackwards"));
-		GEngine->AddOnScreenDebugMessage(-1, 5.f, FColor::Red, TEXT("MovingBackwards"));
+		UE_LOG(LogClass, Error, TEXT("Stopping"));
+		GEngine->AddOnScreenDebugMessage(-1, 5.f, FColor::Red, TEXT("Stopping"));
 
 		GetVehicleMovementComponent()->SetThrottleInput(0.0f);
 		GetVehicleMovementComponent()->SetBrakeInput(delta);
@@ -83,10 +83,14 @@ void ABaseCar::MoveAxisForward(float delta)
 
 void ABaseCar::MoveAxisRight(float delta)
 {
-	UE_LOG(LogClass, Error, TEXT("Turning to delta - %f"), delta);
-	GEngine->AddOnScreenDebugMessage(-1, 5.f, FColor::Magenta, TEXT("Turning Input"));
+	if (!FMath::IsNearlyZero(delta))
+	{
+		UE_LOG(LogClass, Error, TEXT("Turning to delta - %f"), delta);
+		GEngine->AddOnScreenDebugMessage(-1, 5.f, FColor::Magenta, TEXT("Turning Input"));
 
-	GetVehicleMovementComponent()->SetSteeringInput(delta);
+		GetVehicleMovementComponent()->SetSteeringInput(delta);
+
+	}
 }
 
 void ABaseCar::HandleSwitchCamera()
@@ -98,6 +102,7 @@ void ABaseCar::HandleSwitchCamera()
 
 		InCarCamera->Deactivate();
 		ChaseCamera->Activate(false);
+		isInCarCamera = false;
 	}
 	else
 	{
@@ -106,6 +111,7 @@ void ABaseCar::HandleSwitchCamera()
 
 		ChaseCamera->Deactivate();
 		InCarCamera->Activate(false);
+		isInCarCamera = true;
 	}
 }
 
