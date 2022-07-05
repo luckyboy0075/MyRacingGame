@@ -8,7 +8,7 @@
 ABaseCar::ABaseCar()
 {
 	InCarScene = CreateDefaultSubobject<USceneComponent>(TEXT("InCarScene"));
-	InCarScene->SetupAttachment(InCarScene);
+	InCarScene->SetupAttachment(RootComponent);
 
 	InCarCamera = CreateDefaultSubobject<UCameraComponent>(TEXT("InCarCamera"));
 	InCarCamera->SetupAttachment(InCarScene);
@@ -50,17 +50,32 @@ void ABaseCar::Tick(float delta)
 void ABaseCar::SetupPlayerInputComponent(UInputComponent* playerInputComponent)
 {
 	Super::SetupPlayerInputComponent(playerInputComponent);
+
+	playerInputComponent->BindAction("ApplyHandbrake", IE_Pressed, this, &ABaseCar::ApplyHandbrakePressed);
+	playerInputComponent->BindAction("ApplyHandbrake", IE_Released, this, &ABaseCar::ApplyHandbrakeReleased);
+	playerInputComponent->BindAction("SwitchCamera", IE_Pressed, this, &ABaseCar::HandleSwitchCamera);
+	playerInputComponent->BindAction("ShiftUp", IE_Pressed, this, &ABaseCar::ShiftGearUp);
+	playerInputComponent->BindAction("ShiftDown", IE_Pressed, this, &ABaseCar::ShiftGearDown);
+	
+	playerInputComponent->BindAxis("MoveForward", this, &ABaseCar::MoveAxisForward);
+	playerInputComponent->BindAxis("TurnRigth", this, &ABaseCar::MoveAxisRight);
 }
 
 void ABaseCar::MoveAxisForward(float delta)
 {
-	if (!FMath::IsNearlyZero(delta))
+	if (delta > 0)
 	{
+		UE_LOG(LogClass, Error, TEXT("MovingForward"));
+		GEngine->AddOnScreenDebugMessage(-1, 5.f, FColor::Green, TEXT("MovingForward"));
+
 		GetVehicleMovementComponent()->SetThrottleInput(delta);
 		GetVehicleMovementComponent()->SetBrakeInput(0.0f);
-		}
+	}
 	else
 	{
+		UE_LOG(LogClass, Error, TEXT("MovingBackwards"));
+		GEngine->AddOnScreenDebugMessage(-1, 5.f, FColor::Red, TEXT("MovingBackwards"));
+
 		GetVehicleMovementComponent()->SetThrottleInput(0.0f);
 		GetVehicleMovementComponent()->SetBrakeInput(delta);
 	}
@@ -68,6 +83,9 @@ void ABaseCar::MoveAxisForward(float delta)
 
 void ABaseCar::MoveAxisRight(float delta)
 {
+	UE_LOG(LogClass, Error, TEXT("Turning to delta - %f"), delta);
+	GEngine->AddOnScreenDebugMessage(-1, 5.f, FColor::Magenta, TEXT("Turning Input"));
+
 	GetVehicleMovementComponent()->SetSteeringInput(delta);
 }
 
@@ -75,11 +93,17 @@ void ABaseCar::HandleSwitchCamera()
 {
 	if (isInCarCamera)
 	{
+		UE_LOG(LogClass, Error, TEXT("ChaseCamera - activating"));
+		GEngine->AddOnScreenDebugMessage(-1, 5.f, FColor::Cyan, TEXT("ChaseCamera - activating"));
+
 		InCarCamera->Deactivate();
 		ChaseCamera->Activate(false);
 	}
 	else
 	{
+		UE_LOG(LogClass, Error, TEXT("InCar - activating"));
+		GEngine->AddOnScreenDebugMessage(-1, 5.f, FColor::Cyan, TEXT("InCarCamera- activating"));
+
 		ChaseCamera->Deactivate();
 		InCarCamera->Activate(false);
 	}
@@ -87,22 +111,36 @@ void ABaseCar::HandleSwitchCamera()
 
 void ABaseCar::ApplyHandbrakePressed()
 {
+	UE_LOG(LogClass, Error, TEXT("HandBrake up"));
+	GEngine->AddOnScreenDebugMessage(-1, 5.f, FColor::Orange, TEXT("HandBrake up"));
+
 	GetVehicleMovementComponent()->SetHandbrakeInput(true);
 }
 
 void ABaseCar::ApplyHandbrakeReleased()
 {
+	UE_LOG(LogClass, Error, TEXT("HandBrake down"));
+	GEngine->AddOnScreenDebugMessage(-1, 5.f, FColor::Orange, TEXT("HandBrake down"));
+
 	GetVehicleMovementComponent()->SetHandbrakeInput(false);
 }
 
 void ABaseCar::ShiftGearUp()
 {
+	CurrentGear += 1;
+	GetVehicleMovementComponent()->SetTargetGear(CurrentGear, true);
 
+	UE_LOG(LogClass, Error, TEXT("Shift Up, Current Gear - %i"), CurrentGear);
+	GEngine->AddOnScreenDebugMessage(-1, 5.f, FColor::Yellow, TEXT("Shift Up"));
 }
 
 void ABaseCar::ShiftGearDown()
 {
+	CurrentGear -= 1;
+	GetVehicleMovementComponent()->SetTargetGear(CurrentGear, true);
 
+	UE_LOG(LogClass, Error, TEXT("Shift Down, Current Gear - %i"), CurrentGear);
+	GEngine->AddOnScreenDebugMessage(-1, 5.f, FColor::Blue, TEXT("Shift Down"));
 }
 
 void ABaseCar::UpdatePhysicalMaterial()
@@ -113,7 +151,7 @@ void ABaseCar::UpdatePhysicalMaterial()
 	{
 		if (isLowFriction)
 		{
-			GetMesh()->SetPhysMaterialOverride(PhysicsMaterialLowFriction);
+//			GetMesh()->SetPhysMaterialOverride(PhysicsMaterialLowFriction);
 			isLowFriction = true;
 		}
 	}

@@ -58,9 +58,9 @@ protected:
 	UPROPERTY(EditAnywhere, BlueprintReadOnly)
 	UAudioComponent* EngineSound{};
 
-	UPROPERTY(EditAnywhere, BlueprintReadOnly)
-	UPhysicalMaterial* PhysicsMaterialLowFriction{};
-
+// 	UPROPERTY(EditAnywhere, BlueprintReadOnly)
+// 	UPhysicalMaterial* PhysicsMaterialLowFriction{};
+// 
 	UPROPERTY(EditAnywhere, BlueprintReadOnly, Category = "Game")
 	bool isLowFriction { false };
 
