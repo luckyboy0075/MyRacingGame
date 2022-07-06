@@ -57,26 +57,29 @@ void ABaseCar::SetupPlayerInputComponent(UInputComponent* playerInputComponent)
 	InputComponent->BindAction("ShiftUp", IE_Pressed, this, &ABaseCar::ShiftGearUp);
 	InputComponent->BindAction("ShiftDown", IE_Pressed, this, &ABaseCar::ShiftGearDown);
 	
-	InputComponent->BindAxis("MoveForward", this, &ABaseCar::MoveAxisForward);
+	InputComponent->BindAxis("MoveForward", this, &ABaseCar::MoveAxisForward);	
+	InputComponent->BindAxis("MoveBackwards", this, &ABaseCar::MoveBackwards);
 	InputComponent->BindAxis("TurnRigth", this, &ABaseCar::MoveAxisRight);
 }
 
 void ABaseCar::MoveAxisForward(float delta)
 {
 	if (!FMath::IsNearlyZero(delta))
-	{
-		UE_LOG(LogClass, Error, TEXT("MovingForward"));
-		GEngine->AddOnScreenDebugMessage(-1, 5.f, FColor::Green, TEXT("MovingForward"));
-
+	{		
 		GetVehicleMovementComponent()->SetThrottleInput(delta);
 		GetVehicleMovementComponent()->SetBrakeInput(0.0f);
 	}
 	else
 	{
-		UE_LOG(LogClass, Error, TEXT("Stopping"));
-		GEngine->AddOnScreenDebugMessage(-1, 5.f, FColor::Red, TEXT("Stopping"));
-
 		GetVehicleMovementComponent()->SetThrottleInput(0.0f);
+		GetVehicleMovementComponent()->SetBrakeInput(1.0f);
+	}
+}
+
+void ABaseCar::MoveBackwards(float delta)
+{
+	if (!FMath::IsNearlyZero(delta))
+	{
 		GetVehicleMovementComponent()->SetBrakeInput(delta);
 	}
 }
@@ -85,9 +88,6 @@ void ABaseCar::MoveAxisRight(float delta)
 {
 	if (!FMath::IsNearlyZero(delta))
 	{
-		UE_LOG(LogClass, Error, TEXT("Turning to delta - %f"), delta);
-		GEngine->AddOnScreenDebugMessage(-1, 5.f, FColor::Magenta, TEXT("Turning Input"));
-
 		GetVehicleMovementComponent()->SetSteeringInput(delta);
 
 	}
@@ -133,8 +133,8 @@ void ABaseCar::ApplyHandbrakeReleased()
 
 void ABaseCar::ShiftGearUp()
 {
-	CurrentGear += 1;
-	GetVehicleMovementComponent()->SetTargetGear(CurrentGear, true);
+	CurrentGear = GetVehicleMovementComponent()->GetTargetGear();
+	GetVehicleMovementComponent()->SetTargetGear(++CurrentGear, true);
 
 	UE_LOG(LogClass, Error, TEXT("Shift Up, Current Gear - %i"), CurrentGear);
 	GEngine->AddOnScreenDebugMessage(-1, 5.f, FColor::Yellow, TEXT("Shift Up"));
@@ -142,33 +142,11 @@ void ABaseCar::ShiftGearUp()
 
 void ABaseCar::ShiftGearDown()
 {
-	CurrentGear -= 1;
-	GetVehicleMovementComponent()->SetTargetGear(CurrentGear, true);
+	CurrentGear = GetVehicleMovementComponent()->GetTargetGear();
+	GetVehicleMovementComponent()->SetTargetGear(--CurrentGear, true);
 
 	UE_LOG(LogClass, Error, TEXT("Shift Down, Current Gear - %i"), CurrentGear);
 	GEngine->AddOnScreenDebugMessage(-1, 5.f, FColor::Blue, TEXT("Shift Down"));
-}
-
-void ABaseCar::UpdatePhysicalMaterial()
-{
-	FVector upVector = GetActorUpVector();
-
-	if (!FMath::IsNearlyZero(upVector.Z))
-	{
-		if (isLowFriction)
-		{
-//			GetMesh()->SetPhysMaterialOverride(PhysicsMaterialLowFriction);
-			isLowFriction = true;
-		}
-	}
-	else
-	{
-		if (!isLowFriction)
-		{
-			GetMesh()->SetPhysMaterialOverride(nullptr);
-			isLowFriction = false;
-		}
-	}
 }
 
 void ABaseCar::SetupInCarHUD()

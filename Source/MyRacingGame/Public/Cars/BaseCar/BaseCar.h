@@ -27,6 +27,7 @@ protected:
 	virtual void SetupPlayerInputComponent(UInputComponent* playerInputComponent) override;
 
 	void MoveAxisForward(float delta);
+	void MoveBackwards(float delta);
 	void MoveAxisRight(float delta);
 
 	void HandleSwitchCamera();
@@ -37,8 +38,11 @@ protected:
 	void ShiftGearUp();
 	void ShiftGearDown();
 
-private:
+	UFUNCTION(BlueprintImplementableEvent)
 	void UpdatePhysicalMaterial();
+
+private:
+
 	void SetupInCarHUD();
 	void UpdateHUDStings();
 	
@@ -61,7 +65,7 @@ protected:
 // 	UPROPERTY(EditAnywhere, BlueprintReadOnly)
 // 	UPhysicalMaterial* PhysicsMaterialLowFriction{};
 // 
-	UPROPERTY(EditAnywhere, BlueprintReadOnly, Category = "Game")
+	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Game")
 	bool isLowFriction { false };
 
 	UPROPERTY(EditAnywhere, BlueprintReadOnly, Category = "Game")
