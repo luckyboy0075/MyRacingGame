@@ -4,6 +4,9 @@
 #include "Components/SceneComponent.h"
 #include "Components/AudioComponent.h"
 #include "ChaosVehicleMovementComponent.h"
+#include "MyRacingGame/Public/RacingPlayerController.h"
+
+#define MPH_TO_KMH_VALUE 1.60934
 
 ABaseCar::ABaseCar()
 {
@@ -41,10 +44,11 @@ void ABaseCar::Tick(float delta)
 
 	UpdatePhysicalMaterial();
 	UpdateHUDStings();
-	SetupInCarHUD();
 
 	float forwardSpeed = GetVehicleMovementComponent()->GetForwardSpeed();
 	EngineSound->SetFloatParameter(TEXT("RPM"), FMath::Abs(forwardSpeed));
+
+	UE_LOG(LogClass, Error, TEXT("CurrentGear - %i"), GetVehicleMovementComponent()->GetTargetGear());
 }
 
 void ABaseCar::SetupPlayerInputComponent(UInputComponent* playerInputComponent)
@@ -89,7 +93,6 @@ void ABaseCar::MoveAxisRight(float delta)
 	if (!FMath::IsNearlyZero(delta))
 	{
 		GetVehicleMovementComponent()->SetSteeringInput(delta);
-
 	}
 }
 
@@ -133,7 +136,7 @@ void ABaseCar::ApplyHandbrakeReleased()
 
 void ABaseCar::ShiftGearUp()
 {
-	CurrentGear = GetVehicleMovementComponent()->GetTargetGear();
+	CurrentGear = GetVehicleMovementComponent()->GetCurrentGear();
 	GetVehicleMovementComponent()->SetTargetGear(++CurrentGear, true);
 
 	UE_LOG(LogClass, Error, TEXT("Shift Up, Current Gear - %i"), CurrentGear);
@@ -142,7 +145,7 @@ void ABaseCar::ShiftGearUp()
 
 void ABaseCar::ShiftGearDown()
 {
-	CurrentGear = GetVehicleMovementComponent()->GetTargetGear();
+	CurrentGear = GetVehicleMovementComponent()->GetCurrentGear();
 	GetVehicleMovementComponent()->SetTargetGear(--CurrentGear, true);
 
 	UE_LOG(LogClass, Error, TEXT("Shift Down, Current Gear - %i"), CurrentGear);
@@ -151,10 +154,19 @@ void ABaseCar::ShiftGearDown()
 
 void ABaseCar::SetupInCarHUD()
 {
-
+	
 }
 
 void ABaseCar::UpdateHUDStings()
 {
+	ARacingPlayerController* localController = Cast<ARacingPlayerController>(Controller);
 
+	if (IsValid(localController))
+	{
+		float currentSpeedInUnits = GetVehicleMovementComponent()->GetForwardSpeedMPH();
+		float currentSpeedKMH = currentSpeedInUnits * MPH_TO_KMH_VALUE > 0.0f ? currentSpeedInUnits * MPH_TO_KMH_VALUE : currentSpeedInUnits * -MPH_TO_KMH_VALUE;
+
+		int32 currentGear = GetVehicleMovementComponent()->GetCurrentGear();
+		localController->UpdateHUD(currentSpeedKMH, currentGear);
+	}
 }
