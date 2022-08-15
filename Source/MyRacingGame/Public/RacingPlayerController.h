@@ -14,10 +14,17 @@ class MYRACINGGAME_API ARacingPlayerController : public APlayerController
 public: 
 	virtual void BeginPlay() override;
 	void UpdateHUD(float inSpeed, int32 inGear);
-	
+
+	FORCEINLINE bool IsDebugOverlayActive() const { return debugOverlayActive; }
+	FORCEINLINE void SetDebugOverlayActive(bool isNeededToActivate) { debugOverlayActive = isNeededToActivate; }
+
 	FORCEINLINE ACarHUD* const GetCurrnetHUD() { return CurrentCarHUD; }
 
 protected:
 	UPROPERTY(EditAnywhere, BlueprintReadOnly)
 	ACarHUD* CurrentCarHUD{};
+
+private:
+	UPROPERTY()
+	bool debugOverlayActive{};
 };

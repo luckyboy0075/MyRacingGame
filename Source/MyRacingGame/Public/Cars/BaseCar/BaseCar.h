@@ -4,6 +4,8 @@
 #include "WheeledVehiclePawn.h"
 #include "BaseCar.generated.h"
 
+#define MPH_TO_KMH_VALUE 1.60934
+
 class UAudioComponent;
 class USceneComponent;
 class UCameraComponent;
@@ -38,13 +40,17 @@ protected:
 	void ShiftGearUp();
 	void ShiftGearDown();
 
+	//DEBUG STUFF
+	void DEBUG_ShowCarOverlay();
+	//DEBUG STUFF
+
 	UFUNCTION(BlueprintImplementableEvent)
 	void UpdatePhysicalMaterial();
 
 private:
-
 	void SetupInCarHUD();
 	void UpdateHUDStings();
+	void DEBUG_UpdateCarOverlay();
 	
 protected:
 	UPROPERTY(EditAnywhere, BlueprintReadOnly)
@@ -73,6 +79,9 @@ protected:
 	
 	UPROPERTY(EditAnywhere, BlueprintReadOnly, Category = "Game")
 	bool isInCarCamera { true };
+
+	UPROPERTY(EditAnywhere, BlueprintReadOnly, Category = "DEBUG")
+	bool carDebugOverlayActive { false };
 
 	UPROPERTY(VisibleAnywhere, BlueprintReadOnly)
 	int32 CurrentGear{};

@@ -4,9 +4,8 @@
 #include "Components/SceneComponent.h"
 #include "Components/AudioComponent.h"
 #include "ChaosVehicleMovementComponent.h"
+#include "MyRacingGame/Public/CarHUD.h"
 #include "MyRacingGame/Public/RacingPlayerController.h"
-
-#define MPH_TO_KMH_VALUE 1.60934
 
 ABaseCar::ABaseCar()
 {
@@ -48,7 +47,10 @@ void ABaseCar::Tick(float delta)
 	float forwardSpeed = GetVehicleMovementComponent()->GetForwardSpeed();
 	EngineSound->SetFloatParameter(TEXT("RPM"), FMath::Abs(forwardSpeed));
 
-	UE_LOG(LogClass, Error, TEXT("CurrentGear - %i"), GetVehicleMovementComponent()->GetTargetGear());
+	if (carDebugOverlayActive)
+	{
+		DEBUG_UpdateCarOverlay();
+	}
 }
 
 void ABaseCar::SetupPlayerInputComponent(UInputComponent* playerInputComponent)
@@ -61,6 +63,10 @@ void ABaseCar::SetupPlayerInputComponent(UInputComponent* playerInputComponent)
 	InputComponent->BindAction("ShiftUp", IE_Pressed, this, &ABaseCar::ShiftGearUp);
 	InputComponent->BindAction("ShiftDown", IE_Pressed, this, &ABaseCar::ShiftGearDown);
 	
+	//DEBUG STUFF
+	InputComponent->BindAction("DEBUG_CAR_OVERLAY", IE_Pressed, this, &ABaseCar::DEBUG_ShowCarOverlay);
+	//DEBUG STAFF 
+
 	InputComponent->BindAxis("MoveForward", this, &ABaseCar::MoveAxisForward);	
 	InputComponent->BindAxis("MoveBackwards", this, &ABaseCar::MoveBackwards);
 	InputComponent->BindAxis("TurnRigth", this, &ABaseCar::MoveAxisRight);
@@ -152,6 +158,25 @@ void ABaseCar::ShiftGearDown()
 	GEngine->AddOnScreenDebugMessage(-1, 5.f, FColor::Blue, TEXT("Shift Down"));
 }
 
+void ABaseCar::DEBUG_ShowCarOverlay()
+{
+	ARacingPlayerController* localController = Cast<ARacingPlayerController>(Controller);
+
+	if (IsValid(localController))
+	{
+		if (carDebugOverlayActive)
+		{
+			carDebugOverlayActive = false;
+			localController->GetCurrentHUD()->HideDEBUGOverlayWidget();
+		}
+		else
+		{
+			carDebugOverlayActive = true;
+			localController->GetCurrentHUD()->ShowDEBUGOverlayWidget();
+		}
+	}
+}
+
 void ABaseCar::SetupInCarHUD()
 {
 	
@@ -159,14 +184,23 @@ void ABaseCar::SetupInCarHUD()
 
 void ABaseCar::UpdateHUDStings()
 {
-	ARacingPlayerController* localController = Cast<ARacingPlayerController>(Controller);
+	ARacingPlayerController* const localController = Cast<ARacingPlayerController>(Controller);
 
 	if (IsValid(localController))
 	{
 		float currentSpeedInUnits = GetVehicleMovementComponent()->GetForwardSpeedMPH();
 		float currentSpeedKMH = currentSpeedInUnits * MPH_TO_KMH_VALUE > 0.0f ? currentSpeedInUnits * MPH_TO_KMH_VALUE : currentSpeedInUnits * -MPH_TO_KMH_VALUE;
 
+
 		int32 currentGear = GetVehicleMovementComponent()->GetCurrentGear();
 		localController->UpdateHUD(currentSpeedKMH, currentGear);
+	}
+}
+
+void ABaseCar::DEBUG_UpdateCarOverlay()
+{
+	if (ARacingPlayerController* const localController = Cast<ARacingPlayerController>(Controller))
+	{
+		localController->GetCurrentHUD()->DEBUG_UpdateOverlay();
 	}
 }

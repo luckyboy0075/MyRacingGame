@@ -34,11 +34,18 @@
 *.sln
 *.log
 
+*.sln
+*.log
+*.bak
+
+
 .vs/
 Binaries/
 Intermediate/
 Saved/
+Script/
 DerivedDataCache/
+enc_temp_folder/
 
 Content/Developers/
 Content/Collections/
