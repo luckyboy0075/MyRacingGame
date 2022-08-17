@@ -100,6 +100,10 @@ void ABaseCar::MoveAxisRight(float delta)
 	{
 		GetVehicleMovementComponent()->SetSteeringInput(delta);
 	}
+	else
+	{
+		GetVehicleMovementComponent()->SetSteeringInput(0.0f);
+	}
 }
 
 void ABaseCar::HandleSwitchCamera()

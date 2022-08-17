@@ -18,7 +18,7 @@ public:
 	FORCEINLINE bool IsDebugOverlayActive() const { return debugOverlayActive; }
 	FORCEINLINE void SetDebugOverlayActive(bool isNeededToActivate) { debugOverlayActive = isNeededToActivate; }
 
-	FORCEINLINE ACarHUD* const GetCurrnetHUD() { return CurrentCarHUD; }
+	FORCEINLINE ACarHUD* const GetCurrentHUD() { return CurrentCarHUD; }
 
 protected:
 	UPROPERTY(EditAnywhere, BlueprintReadOnly)
