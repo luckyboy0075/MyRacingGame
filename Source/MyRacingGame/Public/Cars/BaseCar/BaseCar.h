@@ -40,6 +40,8 @@ protected:
 	void ShiftGearUp();
 	void ShiftGearDown();
 
+	void ChangeTransType();
+
 	//DEBUG STUFF
 	void DEBUG_ShowCarOverlay();
 	//DEBUG STUFF
@@ -67,10 +69,7 @@ protected:
 
 	UPROPERTY(EditAnywhere, BlueprintReadOnly)
 	UAudioComponent* EngineSound{};
-
-// 	UPROPERTY(EditAnywhere, BlueprintReadOnly)
-// 	UPhysicalMaterial* PhysicsMaterialLowFriction{};
-// 
+ 
 	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Game")
 	bool isLowFriction { false };
 
@@ -79,6 +78,9 @@ protected:
 	
 	UPROPERTY(EditAnywhere, BlueprintReadOnly, Category = "Game")
 	bool isInCarCamera { true };
+
+	UPROPERTY(VisibleAnywhere, BlueprintReadOnly, Category = "Transmision")
+	bool isManualTrans { true };
 
 	UPROPERTY(EditAnywhere, BlueprintReadOnly, Category = "DEBUG")
 	bool carDebugOverlayActive { false };

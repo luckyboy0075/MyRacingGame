@@ -156,7 +156,7 @@ void UDebugStatOverlay::UpdateWidget()
 	FL_SlipMagnitude->SetText(FText::FromString(FString::Printf(TEXT("Slip Magnitude- % .*f"), precision,FL_slipMagnitude)));
 	FL_IsSkidding->SetText(FText::FromString(FL_skidding));
 	FL_SkidMagnitude->SetText(FText::FromString(FString::Printf(TEXT("Skid Magnitude - % .*f"), precision,FL_skidMagnitude)));
-	//FL_SkidNormal->SetText(FText::FromString(FString::Printf(TEXT("Skid Normal.X - %f \nSkid Normal.Y - %f \nSkid Normal.Z - %f"), precision,FL_skidNormal.X, FL_skidNormal.Y, FL_skidNormal.Z)));
+	FL_SkidNormal->SetText(FText::FromString(FString::Printf(TEXT("Skid Normal.X - %f \nSkid Normal.Y - %f \nSkid Normal.Z - %f"), precision,FL_skidNormal.X, precision, FL_skidNormal.Y, precision, FL_skidNormal.Z)));
 
 	// FRONT_RIGHT WHEEL DATA
 	FWheelsOutput& FR_Wheel = physOutput->Wheels[1];
@@ -193,7 +193,7 @@ void UDebugStatOverlay::UpdateWidget()
 	FR_SlipMagnitude->SetText(FText::FromString(FString::Printf(TEXT("Slip Magnitude- % .*f"), precision,FR_slipMagnitude)));
 	FR_IsSkidding->SetText(FText::FromString(FR_skidding));
 	FR_SkidMagnitude->SetText(FText::FromString(FString::Printf(TEXT("Skid Magnitude - % .*f"), precision,FR_skidMagnitude)));
-	//FR_SkidNormal->SetText(FText::FromString(FString::Printf(TEXT("Skid Normal.X - % .*f \nSkid Normal.Y - % .*f \nSkid Normal.Z - % .*f"), precision,FR_skidNormal.X, FR_skidNormal.Y, FR_skidNormal.Z)));
+	FR_SkidNormal->SetText(FText::FromString(FString::Printf(TEXT("Skid Normal.X - % .*f \nSkid Normal.Y - % .*f \nSkid Normal.Z - % .*f"), precision, FR_skidNormal.X, precision, FR_skidNormal.Y, precision, FR_skidNormal.Z)));
 
 	//REAR_LEFT WHEEL
 	FWheelsOutput& RL_Wheel = physOutput->Wheels[2];
@@ -230,7 +230,7 @@ void UDebugStatOverlay::UpdateWidget()
 	RL_SlipMagnitude->SetText(FText::FromString(FString::Printf(TEXT("Slip Magnitude- % .*f"), precision,RL_slipMagnitude)));
 	RL_IsSkidding->SetText(FText::FromString(RL_skidding));
 	RL_SkidMagnitude->SetText(FText::FromString(FString::Printf(TEXT("Skid Magnitude - % .*f"), precision,RL_skidMagnitude)));
-//	RL_SkidNormal->SetText(FText::FromString(FString::Printf(TEXT("Skid Normal.X - % .*f \nSkid Normal.Y - % .*f \nSkid Normal.Z - % .*f"), precision,RL_skidNormal.X, RL_skidNormal.Y, RL_skidNormal.Z)));
+	RL_SkidNormal->SetText(FText::FromString(FString::Printf(TEXT("Skid Normal.X - % .*f \nSkid Normal.Y - % .*f \nSkid Normal.Z - % .*f"), precision,RL_skidNormal.X, precision, RL_skidNormal.Y, precision, RL_skidNormal.Z)));
 
 
 	// REAR_RIGHT WHEEL DATA
@@ -268,5 +268,5 @@ void UDebugStatOverlay::UpdateWidget()
 	RR_SlipMagnitude->SetText(FText::FromString(FString::Printf(TEXT("Slip Magnitude- % .*f"), precision,RR_slipMagnitude)));
 	RR_IsSkidding->SetText(FText::FromString(RR_skidding));
 	RR_SkidMagnitude->SetText(FText::FromString(FString::Printf(TEXT("Skid Magnitude - % .*f"), precision,RR_skidMagnitude)));
-	//RR_SkidNormal->SetText(FText::FromString(FString::Printf(TEXT("Skid Normal.X - % .*f \nSkid Normal.Y - % .*f \nSkid Normal.Z - % .*f"), precision,RR_skidNormal.X, RR_skidNormal.Y, RR_skidNormal.Z)));
+	RR_SkidNormal->SetText(FText::FromString(FString::Printf(TEXT("Skid Normal.X - % .*f \nSkid Normal.Y - % .*f \nSkid Normal.Z - % .*f"), precision,RR_skidNormal.X, precision, RR_skidNormal.Y, precision, RR_skidNormal.Z)));
 }

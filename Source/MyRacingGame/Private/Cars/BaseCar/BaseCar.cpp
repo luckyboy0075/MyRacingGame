@@ -62,7 +62,7 @@ void ABaseCar::SetupPlayerInputComponent(UInputComponent* playerInputComponent)
 	InputComponent->BindAction("SwitchCamera", IE_Pressed, this, &ABaseCar::HandleSwitchCamera);
 	InputComponent->BindAction("ShiftUp", IE_Pressed, this, &ABaseCar::ShiftGearUp);
 	InputComponent->BindAction("ShiftDown", IE_Pressed, this, &ABaseCar::ShiftGearDown);
-	
+	InputComponent->BindAction("ChangeTransType", IE_Pressed, this, &ABaseCar::ChangeTransType);
 	//DEBUG STUFF
 	InputComponent->BindAction("DEBUG_CAR_OVERLAY", IE_Pressed, this, &ABaseCar::DEBUG_ShowCarOverlay);
 	//DEBUG STAFF 
@@ -76,13 +76,12 @@ void ABaseCar::MoveAxisForward(float delta)
 {
 	if (!FMath::IsNearlyZero(delta))
 	{		
-		GetVehicleMovementComponent()->SetThrottleInput(delta);
+		GetVehicleMovementComponent()->IncreaseThrottleInput(delta);
 		GetVehicleMovementComponent()->SetBrakeInput(0.0f);
 	}
 	else
 	{
 		GetVehicleMovementComponent()->SetThrottleInput(0.0f);
-		GetVehicleMovementComponent()->SetBrakeInput(1.0f);
 	}
 }
 
@@ -146,6 +145,11 @@ void ABaseCar::ApplyHandbrakeReleased()
 
 void ABaseCar::ShiftGearUp()
 {
+	if (!isManualTrans)
+	{
+		return;
+	}
+
 	CurrentGear = GetVehicleMovementComponent()->GetCurrentGear();
 	GetVehicleMovementComponent()->SetTargetGear(++CurrentGear, true);
 
@@ -155,11 +159,30 @@ void ABaseCar::ShiftGearUp()
 
 void ABaseCar::ShiftGearDown()
 {
+	if (!isManualTrans)
+	{
+		return;
+	}
+
 	CurrentGear = GetVehicleMovementComponent()->GetCurrentGear();
 	GetVehicleMovementComponent()->SetTargetGear(--CurrentGear, true);
 
 	UE_LOG(LogClass, Error, TEXT("Shift Down, Current Gear - %i"), CurrentGear);
 	GEngine->AddOnScreenDebugMessage(-1, 5.f, FColor::Blue, TEXT("Shift Down"));
+}
+
+void ABaseCar::ChangeTransType()
+{
+	if (isManualTrans)
+	{
+		GetVehicleMovementComponent()->SetUseAutomaticGears(true);
+		isManualTrans = false;
+	}
+	else
+	{
+		GetVehicleMovementComponent()->SetUseAutomaticGears(false);
+		isManualTrans = true;
+	}
 }
 
 void ABaseCar::DEBUG_ShowCarOverlay()
